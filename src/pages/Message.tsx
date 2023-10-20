@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { deleteContact, getAllContact, searchContact } from '~/apis/product.api'
+import { deleteContact, deleteMessage, getAllContact, getAllMessage, searchContact, searchMessage } from '~/apis/product.api'
 import CreateModal from '~/components/Modal/CreateModal'
 import { AppContext } from '~/contexts/app.context'
 
@@ -13,34 +13,34 @@ const Messages = () => {
   const [showComment, setShowComment] = useState()
   const [isModalOpen, setModalOpen] = useState(false)
   const { data: dataConfig, isLoading: isLoadingOption } = useQuery({
-    queryKey: ['contacts', 1],
+    queryKey: ['message', 5],
     queryFn: () => {
-      return getAllContact({
+      return getAllMessage({
         page: 1
       })
     },
     onSuccess: (data) => {
-      setData(data.data.comments)
+      setData(data.data.messages)
     },
     cacheTime: 60000
   })
   const itemsPerPage = 8
   const [currentPage, setCurrentPage] = useState(1)
-  const totalPages = Math.ceil(data.length / itemsPerPage)
+  const totalPages = Math.ceil(data?.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   const currentData = data?.slice(startIndex, endIndex)
   const searchMutation = useMutation({
-    mutationFn: (title: string) => searchContact(title)
+    mutationFn: (title: string) => searchMessage(title)
   })
   const deleteMutation = useMutation({
-    mutationFn: (body: any) => deleteContact(body),
+    mutationFn: (body: any) => deleteMessage(body),
     onError: () => {
       toast.warn('Error')
     },
     onSuccess: () => {
       toast.success('Đã xoá')
-      queryClient.invalidateQueries({ queryKey: ['contacts', 1] })
+      queryClient.invalidateQueries({ queryKey: ['message', 5] })
     }
   })
   const handlePageChange = (page: number) => {
@@ -146,7 +146,7 @@ const Messages = () => {
                     <th scope='col' className='px-6 py-3'>
                       Email
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    {/* <th scope='col' className='px-6 py-3'>
                       Địa chỉ
                     </th>
                     <th scope='col' className='px-6 py-3'>
@@ -154,13 +154,13 @@ const Messages = () => {
                     </th>
                     <th scope='col' className='px-6 py-3'>
                       Số điện thoại
-                    </th>
+                    </th> */}
                     <th scope='col' className='px-6 py-3'>
                       Hành động
                     </th>
                   </tr>
                 </thead>
-                {currentData.length !== 0 && (
+                {currentData?.length !== 0 && (
                   <tbody>
                     {currentData?.map((item: any, idx: number) => {
                       return (
@@ -180,7 +180,7 @@ const Messages = () => {
                           >
                             {item?.email}
                           </th>
-                          <th
+                          {/* <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
@@ -197,7 +197,7 @@ const Messages = () => {
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white mobile:w-[200px]'
                           >
                             {item?.phone}
-                          </th>
+                          </th> */}
                           <th
                             scope='row'
                             className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'

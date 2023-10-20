@@ -146,15 +146,15 @@ const Contact = () => {
                     <th scope='col' className='px-6 py-3'>
                       Email
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    {/* <th scope='col' className='px-6 py-3'>
                       Địa chỉ
-                    </th>
+                    </th> */}
                     <th scope='col' className='px-6 py-3'>
                       Nội dung
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    {/* <th scope='col' className='px-6 py-3'>
                       Số điện thoại
-                    </th>
+                    </th> */}
                     <th scope='col' className='px-6 py-3'>
                       Hành động
                     </th>
@@ -180,24 +180,24 @@ const Contact = () => {
                           >
                             {item?.email}
                           </th>
-                          <th
+                          {/* <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             {item?.address}
-                          </th>
+                          </th> */}
                           <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             <div className='max-w-[180px] whitespace-normal line-clamp-1'>{item?.content}</div>
                           </th>
-                          <th
+                          {/* <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white mobile:w-[200px]'
                           >
                             {item?.phone}
-                          </th>
+                          </th> */}
                           <th
                             scope='row'
                             className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'

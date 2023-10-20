@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { deleteStaff, getAllStaff, searchUser } from '~/apis/product.api'
+import { deleteStaff, getAllProduct, getAllStaff, searchUser } from '~/apis/product.api'
 import Modal from '~/components/Modal'
 import CreateStaff from '~/components/Modal/CreateStaff'
+import ShowProduct from '~/components/Modal/ShowProduct'
+import { FormatNumber, FormatNumberK } from '~/hooks/useFormatNumber'
 
 const Products = () => {
   const [staff, setStaff] = useState<any>([])
+  console.log(staff);
   const [search, setSearch] = useState<string>('')
   const itemsPerPage = 8
   const [currentPage, setCurrentPage] = useState(1)
@@ -37,12 +40,12 @@ const Products = () => {
     })
   }
   const { isLoading: isLoadingUser } = useQuery({
-    queryKey: ['user', 3],
+    queryKey: ['product', 11],
     queryFn: () => {
-      return getAllStaff()
+      return getAllProduct()
     },
     onSuccess: (data) => {
-      setStaff(data.data.user)
+      setStaff(data.data.Products)
     },
     cacheTime: 30000
   })
@@ -147,16 +150,16 @@ const Products = () => {
                       STT
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Avatar
+                      Ảnh
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Email
+                      Tên
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Name
+                      Số lượng
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      User Name
+                      Đơn giá
                     </th>
                     <th scope='col' className='px-6 py-3'>
                       Hành động
@@ -181,7 +184,7 @@ const Products = () => {
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item?.avatar[0] == null && (
+                            {item?.image[0] == null && (
                               <div className='relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600'>
                                 <svg
                                   className='absolute w-12 h-12 text-gray-400 -left-1'
@@ -199,11 +202,11 @@ const Products = () => {
                                 </svg>
                               </div>
                             )}
-                            {item?.avatar[0] && (
+                            {item?.image[0] && (
                               <img
                                 className='aa'
                                 style={{ borderRadius: '50%', width: '40px', height: '40px' }}
-                                src={item.avatar}
+                                src={item.image}
                                 alt='avatar'
                               />
                             )}
@@ -212,19 +215,19 @@ const Products = () => {
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.email}
+                            {item.title}
                           </th>
                           <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.name}
+                            {FormatNumberK(item.quantity)}
                           </th>
                           <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.username}
+                            {FormatNumber(item.price)}đ
                           </th>
                           <th
                             scope='row'
@@ -318,7 +321,7 @@ const Products = () => {
           </>
         )}
       </div>
-      <Modal data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
+      <ShowProduct data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
       <CreateStaff isOpen={isModalOpenCreate} onClose={() => setModalOpenCreate(false)} />
     </>
   )

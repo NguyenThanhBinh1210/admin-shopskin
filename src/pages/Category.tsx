@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { deleteStaff, getAllStaff, searchUser } from '~/apis/product.api'
+import { deleteStaff, getAllCategory, getAllStaff, searchUser } from '~/apis/product.api'
 import Modal from '~/components/Modal'
+import CreateCategory from '~/components/Modal/CreateCategory'
 import CreateStaff from '~/components/Modal/CreateStaff'
 
 const Categories = () => {
   const [staff, setStaff] = useState<any>([])
+  console.log(staff);
   const [search, setSearch] = useState<string>('')
   const itemsPerPage = 8
   const [currentPage, setCurrentPage] = useState(1)
@@ -37,12 +39,14 @@ const Categories = () => {
     })
   }
   const { isLoading: isLoadingUser } = useQuery({
-    queryKey: ['user', 3],
+    queryKey: ['category', 10],
     queryFn: () => {
-      return getAllStaff()
+      return getAllCategory({
+        page: 1
+      })
     },
     onSuccess: (data) => {
-      setStaff(data.data.user)
+      setStaff(data.data)
     },
     cacheTime: 30000
   })
@@ -147,9 +151,9 @@ const Categories = () => {
                       STT
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Avatar
+                      Tên
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    {/* <th scope='col' className='px-6 py-3'>
                       Email
                     </th>
                     <th scope='col' className='px-6 py-3'>
@@ -157,7 +161,7 @@ const Categories = () => {
                     </th>
                     <th scope='col' className='px-6 py-3'>
                       User Name
-                    </th>
+                    </th> */}
                     <th scope='col' className='px-6 py-3'>
                       Hành động
                     </th>
@@ -177,7 +181,7 @@ const Categories = () => {
                           >
                             {'#' + (idx + 1)}
                           </th>
-                          <th
+                          {/* <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
@@ -207,14 +211,14 @@ const Categories = () => {
                                 alt='avatar'
                               />
                             )}
-                          </th>
+                          </th> */}
                           <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.email}
+                            {item.nameCategory}
                           </th>
-                          <th
+                          {/* <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
@@ -225,7 +229,7 @@ const Categories = () => {
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             {item.username}
-                          </th>
+                          </th> */}
                           <th
                             scope='row'
                             className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
@@ -319,7 +323,7 @@ const Categories = () => {
         )}
       </div>
       <Modal data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
-      <CreateStaff isOpen={isModalOpenCreate} onClose={() => setModalOpenCreate(false)} />
+      <CreateCategory isOpen={isModalOpenCreate} onClose={() => setModalOpenCreate(false)} />
     </>
   )
 }

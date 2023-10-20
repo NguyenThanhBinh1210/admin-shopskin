@@ -153,9 +153,9 @@ const Comment = () => {
                     <th scope='col' className='px-6 py-3'>
                       Email
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    {/* <th scope='col' className='px-6 py-3'>
                       Địa chỉ
-                    </th>
+                    </th> */}
                     <th scope='col' className='px-6 py-3'>
                       Nội dung
                     </th>
@@ -187,12 +187,12 @@ const Comment = () => {
                           >
                             {item?.email}
                           </th>
-                          <th
+                          {/* <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             {item?.address}
-                          </th>
+                          </th> */}
                           <th
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
