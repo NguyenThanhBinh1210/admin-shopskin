@@ -4,6 +4,8 @@ import { toast } from 'react-toastify'
 import { deleteOrder, getAllOrder, searchOrder } from '~/apis/product.api'
 import Modal from '~/components/Modal'
 import CreateStaff from '~/components/Modal/CreateStaff'
+import ShowOrder from '~/components/Modal/ShowOrder'
+import { FormatNumber } from '~/hooks/useFormatNumber'
 
 const Oders = () => {
   const [staff, setStaff] = useState<any>([])
@@ -30,7 +32,7 @@ const Oders = () => {
     deleteMutation.mutate(id, {
       onSuccess: () => {
         toast.success('Đã xoá!')
-        queryClient.invalidateQueries({ queryKey: ['user', 3] })
+        queryClient.invalidateQueries({ queryKey: ['orders', 3] })
       },
       onError: () => {
         toast.warn('Lỗi!')
@@ -152,7 +154,7 @@ const Oders = () => {
                       Name
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Product
+                      Email
                     </th>
                     <th scope='col' className='px-6 py-3'>
                       phone
@@ -187,32 +189,6 @@ const Oders = () => {
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             {item.name}
-                            {/* {item?.product.image[0] == null && (
-                              <div className='relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600'>
-                                <svg
-                                  className='absolute w-12 h-12 text-gray-400 -left-1'
-                                  fill='currentColor'
-                                  viewBox='0 0 20 20'
-                                  // style={{ borderRadius: '50%', width: '40px', height: '40px' }}
-                                  xmlns='http://www.w3.org/2000/svg'
-                                >
-                                  <path
-                                    fillRule='evenodd'
-                                    // style={{ borderRadius: '50%', width: '40px', height: '40px' }}
-                                    d='M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z'
-                                    clipRule='evenodd'
-                                  ></path>
-                                </svg>
-                              </div>
-                            )}
-                            {item?.avatar[0] && (
-                              <img
-                                className='aa'
-                                style={{ borderRadius: '50%', width: '40px', height: '40px' }}
-                                src={item.avatar}
-                                alt='avatar'
-                              />
-                            )} */}
                           </th>
                           <th
                             scope='row'
@@ -230,7 +206,7 @@ const Oders = () => {
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.Sum}
+                            {FormatNumber(item.Sum)}đ
                           </th>
                           <th
                             scope='row'
@@ -330,8 +306,7 @@ const Oders = () => {
           </>
         )}
       </div>
-      <Modal data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
-      <CreateStaff isOpen={isModalOpenCreate} onClose={() => setModalOpenCreate(false)} />
+      <ShowOrder data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
     </>
   )
 }
