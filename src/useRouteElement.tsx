@@ -106,7 +106,7 @@ const useRouteElements = () => {
               <Messages />
             </AdminLayout>
           )
-        },
+        }
       ]
     }
   ])

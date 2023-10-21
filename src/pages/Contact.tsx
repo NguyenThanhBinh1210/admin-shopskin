@@ -292,7 +292,6 @@ const Contact = () => {
       </div>
       <CreateModal data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
     </>
-
   )
 }
 

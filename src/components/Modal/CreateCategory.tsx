@@ -1,7 +1,7 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { createStaff } from '~/apis/product.api'
+import { createCategory, createStaff, updateCategory } from '~/apis/product.api'
 
 export interface Staff {
   name: string
@@ -11,7 +11,7 @@ export interface Staff {
   isStaff: boolean
   isAdmin: boolean
 }
-const CreateCategory = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+const CreateCategory = ({ isOpen, onClose, data }: any) => {
   const modalRef = useRef<HTMLDivElement>(null)
 
   const handleModalClick = (e: React.MouseEvent) => {
@@ -20,35 +20,50 @@ const CreateCategory = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
     }
   }
 
-  const initialFromState: Staff = {
-    name: '',
-    username: '',
-    email: '',
-    password: '',
-    isStaff: true,
-    isAdmin: false
+  const initialFromState = {
+    nameCategory: ''
   }
   const queryClient = useQueryClient()
-  const mutation = useMutation((body: Staff) => {
-    return createStaff(body)
+  const mutation = useMutation((body: any) => {
+    return createCategory(body)
+  })
+  const updateMutation = useMutation((body: any) => {
+    return updateCategory(data?._id, body)
   })
   const [formState, setFormState] = useState(initialFromState)
+  useEffect(() => {
+    setFormState(data)
+  }, [data])
   const handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormState((prev) => ({ ...prev, [name]: event.target.value }))
   }
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    mutation.mutate(formState, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['user', 3] })
-        setFormState(initialFromState)
-        toast.success('Thành công!')
-        onClose()
-      },
-      onError: (error: any) => {
-        toast.warn(error?.response.data.errMessage)
-      }
-    })
+    if (data === null) {
+      mutation.mutate(formState, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['category', 10] })
+          setFormState(initialFromState)
+          toast.success('Thành công!')
+          onClose()
+        },
+        onError: (error: any) => {
+          toast.warn(error?.response.data.errMessage)
+        }
+      })
+    } else {
+      updateMutation.mutate(formState, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['category', 10] })
+          setFormState(initialFromState)
+          toast.success('Thành công!')
+          onClose()
+        },
+        onError: (error: any) => {
+          toast.warn(error?.response.data.errMessage)
+        }
+      })
+    }
   }
   return (
     <div
@@ -56,8 +71,9 @@ const CreateCategory = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
       tabIndex={-1}
       aria-hidden='true'
       onClick={handleModalClick}
-      className={` ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-        } fixed bg-[#02020246] dark:bg-[#ffffff46] top-0 left-0 right-0 z-50 w-[100vw] p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[100vh] transition-all`}
+      className={` ${
+        isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+      } fixed bg-[#02020246] dark:bg-[#ffffff46] top-0 left-0 right-0 z-50 w-[100vw] p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[100vh] transition-all`}
     >
       <div
         ref={modalRef}
@@ -88,64 +104,25 @@ const CreateCategory = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
             <span className='sr-only'>Close modal</span>
           </button>
           <div className='px-6 py-6 lg:px-8'>
-            <h3 className='mb-4 text-xl font-medium text-gray-900 dark:text-white'>Tạo danh mục</h3>
+            <h3 className='mb-4 text-xl font-medium text-gray-900 dark:text-white'>
+              {data !== null ? 'Sửa' : 'Tạo'} danh mục
+            </h3>
             <form className='space-y-6' action='#' autoComplete='false' onSubmit={(e) => handleSubmit(e)}>
-              {/* <div>
-                <label htmlFor='email' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                  Email
-                </label>
-                <input
-                  type='text'
-                  name='email'
-                  id='email'
-                  onChange={handleChange('email')}
-                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
-                  placeholder='Email'
-                  value={formState?.email}
-                />
-              </div> */}
               <div>
-                <label htmlFor='name' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
+                <label htmlFor='nameCategory' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
                   Tên
                 </label>
                 <input
                   type='text'
-                  name='name'
-                  id='name'
+                  name='nameCategory'
+                  id='nameCategory'
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
                   placeholder='Tên'
-                  value={formState?.name}
-                  onChange={handleChange('name')}
+                  value={formState?.nameCategory || ''}
+                  onChange={handleChange('nameCategory')}
                 />
               </div>
-              {/* <div>
-                <label htmlFor='username' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                  Tài khoản
-                </label>
-                <input
-                  type='text'
-                  name='username'
-                  id='username'
-                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
-                  placeholder='Tài khoản'
-                  value={formState?.username}
-                  onChange={handleChange('username')}
-                />
-              </div>
-              <div>
-                <label htmlFor='password' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                  Mật khẩu
-                </label>
-                <input
-                  type='text'
-                  name='password'
-                  id='password'
-                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
-                  placeholder='Mật khẩu'
-                  value={formState?.password}
-                  onChange={handleChange('password')}
-                />
-              </div> */}
+
               <button
                 type='submit'
                 className='w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
@@ -172,7 +149,7 @@ const CreateCategory = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                     Đang chờ...
                   </div>
                 ) : (
-                  'Tạo'
+                  'Xác nhận'
                 )}
               </button>
             </form>
