@@ -44,11 +44,7 @@ export const updateConfig = (body: { title: string; price: number; url_tele: str
   http.post('/config/update', body)
 export const getAllStaff = () => http.get('v1/user/get-all-staff')
 export const getAllOrder = () => http.get('v1/order/get-order')
-export const searchOrder = (name: string) => http.get(`/v1/message/search?content=${name}`)
-export const deleteOrder = (body: string[]) =>
-  http.delete(`/v1/order/delete`, {
-    data: {
-      id: body
-    }
-  })
+export const searchOrder = (name: string) => http.get(`/v1/order/search?name=${name}`)
+export const deleteOrder = (id: string) => http.delete(`v1/order/delete/${id}`)
+
 export const repComment = (id: string, body: any) => http.post(`v1/comment/rep-comment`, body)

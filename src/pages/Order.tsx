@@ -7,6 +7,7 @@ import CreateStaff from '~/components/Modal/CreateStaff'
 
 const Oders = () => {
   const [staff, setStaff] = useState<any>([])
+  const [count, setCount] = useState<any>([])
   const [search, setSearch] = useState<string>('')
   const itemsPerPage = 8
   const [currentPage, setCurrentPage] = useState(1)
@@ -43,6 +44,7 @@ const Oders = () => {
     },
     onSuccess: (data) => {
       setStaff(data.data.orders)
+      setCount(data.data)
     },
     cacheTime: 30000
   })
@@ -67,7 +69,7 @@ const Oders = () => {
     <>
       <div className='flex justify-between mb-3 mobile:flex-col tablet:flex-col'>
         <div className='mb-2 flex items-center'>
-          <span className='my-4 font-bold dark:text-white'>Số lượng đơn hàng: {staff.length || 0}</span>
+          <span className='my-4 font-bold dark:text-white'>Số lượng đơn hàng: {count.count || 0}</span>
           {/* <button
             onClick={() => setModalOpenCreate(true)}
             className='disabled:bg-opacity-70 ml-4 h-[40px] w-max text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-2xl text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
@@ -147,16 +149,19 @@ const Oders = () => {
                       STT
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Avatar
-                    </th>
-                    <th scope='col' className='px-6 py-3'>
-                      Email
-                    </th>
-                    <th scope='col' className='px-6 py-3'>
                       Name
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      User Name
+                      Product
+                    </th>
+                    <th scope='col' className='px-6 py-3'>
+                      phone
+                    </th>
+                    <th scope='col' className='px-6 py-3'>
+                      Tổng tiền
+                    </th>
+                    <th scope='col' className='px-6 py-3'>
+                      Ghi chú
                     </th>
                     <th scope='col' className='px-6 py-3'>
                       Hành động
@@ -181,6 +186,7 @@ const Oders = () => {
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
+                            {item.name}
                             {/* {item?.product.image[0] == null && (
                               <div className='relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600'>
                                 <svg
@@ -218,7 +224,13 @@ const Oders = () => {
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.name}
+                            {item.phone}
+                          </th>
+                          <th
+                            scope='row'
+                            className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                          >
+                            {item.Sum}
                           </th>
                           <th
                             scope='row'
