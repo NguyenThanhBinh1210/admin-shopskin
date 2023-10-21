@@ -19,6 +19,22 @@ export function getShortString(inputStr: string) {
   return shortStr
 }
 
+export function objectToFormData(obj: any) {
+  const formData = new FormData()
+
+  for (const key in obj) {
+    if (Array.isArray(obj[key])) {
+      obj[key].forEach((item: any) => {
+        formData.append(key, item)
+      })
+    } else {
+      formData.append(key, obj[key])
+    }
+  }
+
+  return formData
+}
+
 export const isJsonString = (data: any) => {
   try {
     JSON.parse(data)

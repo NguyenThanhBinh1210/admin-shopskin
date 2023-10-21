@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { getAllCategory, updateProduct } from '~/apis/product.api'
+import { createProduct, getAllCategory, updateProduct } from '~/apis/product.api'
 import { toast } from 'react-toastify'
-const ShowProduct = ({ isOpen, onClose, data }: any) => {
+import { objectToFormData } from '~/utils/utils'
+const CreateProduct = ({ isOpen, onClose, data }: any) => {
   const modalRef = useRef<HTMLDivElement>(null)
   const handleModalClick = (e: React.MouseEvent) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       onClose()
     }
   }
+  const [tempImage, setTempImage] = useState<any>()
   const initialFromState = {
     title: '',
     image: [],
@@ -22,22 +24,16 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
     priceOld: 0,
     quantity: 0,
     size: '',
-    slug: '',
     use: '',
     wording: '',
     description: ''
   }
   const queryClient = useQueryClient()
   const mutation = useMutation((body: any) => {
-    return updateProduct(data._id, body)
+    return createProduct(body)
   })
-  const mutationChangeAvatar = useMutation((image) => {
-    return updateProduct(data._id, { image })
-  })
+
   const [formState, setFormState] = useState(initialFromState)
-  useEffect(() => {
-    setFormState(data)
-  }, [data])
   const [category, setCategory] = useState([])
   useQuery({
     queryKey: ['category', 10],
@@ -63,26 +59,19 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
     }
 
   const handleAvatar = (e: any) => {
-    const formData: any = new FormData()
     const file = e.target.files[0]
     if (file) {
-      formData.append('avatar', file)
-      mutationChangeAvatar.mutate(file, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['user', 3] })
-          toast.success('Đổi avatar thành công!')
-          onClose()
-        },
-        onError: () => {
-          toast.error('Lỗi khi cập nhật avatar!')
-        }
-      })
+      const newData = { ...formState, image: file }
+      setFormState(newData)
+      const imageURL = URL.createObjectURL(file)
+      setTempImage(imageURL)
     }
   }
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     // console.log(formState);
-    mutation.mutate(formState, {
+    const formData = objectToFormData(formState)
+    mutation.mutate(formData, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['product', 11] })
         setFormState(initialFromState)
@@ -134,13 +123,15 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
           </button>
           <div className='px-6 py-6 lg:px-8'>
             <h3 className='mb-4 text-xl font-medium text-gray-900 dark:text-white'>Xem/Sửa sản phẩm</h3>
-            <div className='relative mb-4 group w-[200px] h-[200px] mx-auto overflow-hidden rounded-full'>
-              <img src={data?.image[0]} alt='avatar' />
-            </div>
+            {tempImage && (
+              <div className='relative mb-4 group w-[200px] h-[200px] mx-auto overflow-hidden rounded-full'>
+                <img src={tempImage} alt='avatar' />
+              </div>
+            )}
             <form className='space-y-6' action='#' autoComplete='false' onSubmit={(e) => handleSubmit(e)}>
               <div className='flex items-center justify-center w-full'>
                 <label
-                  htmlFor='dropzone-file'
+                  htmlFor='dropzone-file-2'
                   className='flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600'
                 >
                   <div className='flex flex-col items-center justify-center pt-5 pb-6'>
@@ -165,7 +156,7 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
                     <p className='text-xs text-gray-500 dark:text-gray-400'>SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
                   </div>
                   <input
-                    id='dropzone-file'
+                    id='dropzone-file-2'
                     type='file'
                     accept='image/*'
                     className='hidden'
@@ -180,6 +171,7 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
                   Tên
                 </label>
                 <input
+                  required
                   type='text'
                   name='name'
                   id='name'
@@ -200,8 +192,9 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
                     value={formState?.category._id !== '' ? formState?.category._id : data?.category._id}
                     className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
                   >
+                    <option hidden>Chọn danh mục</option>
                     {category.map((item: any) => (
-                      <option key={item._id} selected value={item._id}>
+                      <option key={item._id} value={item._id}>
                         {item.nameCategory}
                       </option>
                     ))}
@@ -212,6 +205,7 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
                     Giá
                   </label>
                   <input
+                    required
                     type='text'
                     name='price'
                     id='price'
@@ -226,6 +220,7 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
                     Giá gốc
                   </label>
                   <input
+                    required
                     type='text'
                     name='priceOld'
                     id='priceOld'
@@ -236,12 +231,13 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
                   />
                 </div>
               </div>
-              <div className='grid grid-cols-3 gap-x-4'>
+              <div className='grid grid-cols-2 gap-x-4'>
                 <div>
                   <label htmlFor='quantity' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
                     Số lượng
                   </label>
                   <input
+                    required
                     type='text'
                     name='quantity'
                     id='quantity'
@@ -256,28 +252,14 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
                     Size
                   </label>
                   <input
+                    required
                     type='text'
                     name='size'
                     id='size'
                     className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
-                    placeholder='Giá'
+                    placeholder='Size'
                     value={formState?.size !== '' ? formState?.size : data?.size}
                     onChange={handleChange('size')}
-                  />
-                </div>
-                <div>
-                  <label htmlFor='slug' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                    Slug
-                  </label>
-                  <input
-                    type='text'
-                    name='slug'
-                    id='slug'
-                    disabled
-                    className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
-                    placeholder='Số lượng'
-                    value={formState?.slug !== '' ? formState?.slug : data?.slug}
-                    onChange={handleChange('slug')}
                   />
                 </div>
               </div>
@@ -286,10 +268,11 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
                   Mô tả
                 </label>
                 <textarea
+                  required
                   name='description'
                   id='description'
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
-                  placeholder='Số lượng'
+                  placeholder='Mô tả'
                   value={formState?.description !== '' ? formState?.description : data?.description}
                   onChange={handleChange('description')}
                 />
@@ -300,10 +283,11 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
                     Use
                   </label>
                   <textarea
+                    required
                     name='use'
                     id='use'
                     className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
-                    placeholder='Giá'
+                    placeholder='Use'
                     value={formState?.use !== '' ? formState?.use : data?.use}
                     onChange={handleChange('use')}
                   />
@@ -313,12 +297,13 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
                     Wording
                   </label>
                   <textarea
+                    required
                     name='wording'
                     id='wording'
                     className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
                     placeholder='Số lượng'
                     value={formState?.wording !== '' ? formState?.wording : data?.wording}
-                    onChange={handleChange('wording')}
+                    onChange={handleChange('Wording')}
                   />
                 </div>
               </div>
@@ -327,10 +312,11 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
                   Ghi chú
                 </label>
                 <textarea
+                  required
                   name='note'
                   id='note'
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
-                  placeholder='Số lượng'
+                  placeholder='Ghi chú'
                   value={formState?.note !== '' ? formState?.note : data?.note}
                   onChange={handleChange('note')}
                 />
@@ -372,4 +358,4 @@ const ShowProduct = ({ isOpen, onClose, data }: any) => {
   )
 }
 
-export default ShowProduct
+export default CreateProduct

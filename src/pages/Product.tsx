@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { deleteStaff, getAllProduct, getAllStaff, searchUser } from '~/apis/product.api'
-import Modal from '~/components/Modal'
+import { deleteProduct, deleteStaff, getAllProduct, searchProduct, searchUser } from '~/apis/product.api'
+import CreateProduct from '~/components/Modal/CreateProduct'
 import CreateStaff from '~/components/Modal/CreateStaff'
 import ShowProduct from '~/components/Modal/ShowProduct'
 import { FormatNumber, FormatNumberK } from '~/hooks/useFormatNumber'
 
 const Products = () => {
   const [staff, setStaff] = useState<any>([])
-  console.log(staff);
   const [search, setSearch] = useState<string>('')
   const itemsPerPage = 8
   const [currentPage, setCurrentPage] = useState(1)
@@ -22,17 +21,18 @@ const Products = () => {
   const [isModalOpenCreate, setModalOpenCreate] = useState(false)
 
   const searchMutation = useMutation({
-    mutationFn: (email: string) => searchUser(email)
+    mutationFn: (title: string) => searchProduct(title)
   })
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteStaff(id)
+    mutationFn: (body: any) => deleteProduct(body)
   })
   const queryClient = useQueryClient()
   const handleDeleteStaff = (id: string) => {
-    deleteMutation.mutate(id, {
+    const body = [id]
+    deleteMutation.mutate(body, {
       onSuccess: () => {
         toast.success('Đã xoá!')
-        queryClient.invalidateQueries({ queryKey: ['user', 3] })
+        queryClient.invalidateQueries({ queryKey: ['product', 11] })
       },
       onError: () => {
         toast.warn('Lỗi!')
@@ -322,7 +322,7 @@ const Products = () => {
         )}
       </div>
       <ShowProduct data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
-      <CreateStaff isOpen={isModalOpenCreate} onClose={() => setModalOpenCreate(false)} />
+      <CreateProduct isOpen={isModalOpenCreate} onClose={() => setModalOpenCreate(false)} />
     </>
   )
 }

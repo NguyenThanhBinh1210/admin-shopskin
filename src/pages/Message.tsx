@@ -1,7 +1,14 @@
 import { useContext, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { deleteContact, deleteMessage, getAllContact, getAllMessage, searchContact, searchMessage } from '~/apis/product.api'
+import {
+  deleteContact,
+  deleteMessage,
+  getAllContact,
+  getAllMessage,
+  searchContact,
+  searchMessage
+} from '~/apis/product.api'
 import CreateModal from '~/components/Modal/CreateModal'
 import { AppContext } from '~/contexts/app.context'
 
@@ -292,7 +299,6 @@ const Messages = () => {
       </div>
       <CreateModal data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
     </>
-
   )
 }
 

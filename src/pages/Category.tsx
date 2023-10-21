@@ -1,14 +1,18 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { deleteStaff, getAllCategory, getAllStaff, searchUser } from '~/apis/product.api'
-import Modal from '~/components/Modal'
+import {
+  deleteCategory,
+  deleteStaff,
+  getAllCategory,
+  getAllStaff,
+  searchCategory,
+  searchUser
+} from '~/apis/product.api'
 import CreateCategory from '~/components/Modal/CreateCategory'
-import CreateStaff from '~/components/Modal/CreateStaff'
 
 const Categories = () => {
   const [staff, setStaff] = useState<any>([])
-  console.log(staff);
   const [search, setSearch] = useState<string>('')
   const itemsPerPage = 8
   const [currentPage, setCurrentPage] = useState(1)
@@ -16,22 +20,23 @@ const Categories = () => {
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   const currentData = staff?.slice(startIndex, endIndex)
-  const [showComment, setShowComment] = useState()
+  const [showComment, setShowComment] = useState<any | null>(null)
   const [isModalOpen, setModalOpen] = useState(false)
   const [isModalOpenCreate, setModalOpenCreate] = useState(false)
 
   const searchMutation = useMutation({
-    mutationFn: (email: string) => searchUser(email)
+    mutationFn: (title: string) => searchCategory(title)
   })
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteStaff(id)
+    mutationFn: (body: any) => deleteCategory(body)
   })
   const queryClient = useQueryClient()
   const handleDeleteStaff = (id: string) => {
-    deleteMutation.mutate(id, {
+    const body = [id]
+    deleteMutation.mutate(body, {
       onSuccess: () => {
         toast.success('Đã xoá!')
-        queryClient.invalidateQueries({ queryKey: ['user', 3] })
+        queryClient.invalidateQueries({ queryKey: ['category', 10] })
       },
       onError: () => {
         toast.warn('Lỗi!')
@@ -322,8 +327,15 @@ const Categories = () => {
           </>
         )}
       </div>
-      <Modal data={showComment} isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
-      <CreateCategory isOpen={isModalOpenCreate} onClose={() => setModalOpenCreate(false)} />
+      <CreateCategory
+        data={showComment}
+        isOpen={isModalOpenCreate || isModalOpen}
+        onClose={() => {
+          setModalOpenCreate(false)
+          setModalOpen(false)
+          setShowComment(null)
+        }}
+      />
     </>
   )
 }
