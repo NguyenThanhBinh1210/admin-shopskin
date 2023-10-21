@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { deleteStaff, getAllStaff, searchUser } from '~/apis/product.api'
+import { deleteOrder, getAllOrder, searchOrder } from '~/apis/product.api'
 import Modal from '~/components/Modal'
 import CreateStaff from '~/components/Modal/CreateStaff'
 
@@ -19,13 +19,13 @@ const Oders = () => {
   const [isModalOpenCreate, setModalOpenCreate] = useState(false)
 
   const searchMutation = useMutation({
-    mutationFn: (email: string) => searchUser(email)
+    mutationFn: (email: string) => searchOrder(email)
   })
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteStaff(id)
+    mutationFn: (id: string) => deleteOrder(id)
   })
   const queryClient = useQueryClient()
-  const handleDeleteStaff = (id: string) => {
+  const handledeleteOrder = (id: string) => {
     deleteMutation.mutate(id, {
       onSuccess: () => {
         toast.success('Đã xoá!')
@@ -37,12 +37,12 @@ const Oders = () => {
     })
   }
   const { isLoading: isLoadingUser } = useQuery({
-    queryKey: ['user', 3],
+    queryKey: ['orders', 3],
     queryFn: () => {
-      return getAllStaff()
+      return getAllOrder()
     },
     onSuccess: (data) => {
-      setStaff(data.data.user)
+      setStaff(data.data.orders)
     },
     cacheTime: 30000
   })
@@ -181,7 +181,7 @@ const Oders = () => {
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item?.avatar[0] == null && (
+                            {/* {item?.product.image[0] == null && (
                               <div className='relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600'>
                                 <svg
                                   className='absolute w-12 h-12 text-gray-400 -left-1'
@@ -206,7 +206,7 @@ const Oders = () => {
                                 src={item.avatar}
                                 alt='avatar'
                               />
-                            )}
+                            )} */}
                           </th>
                           <th
                             scope='row'
@@ -224,7 +224,7 @@ const Oders = () => {
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.username}
+                            {item.note}
                           </th>
                           <th
                             scope='row'
@@ -242,7 +242,7 @@ const Oders = () => {
                             </button>
                             <button
                               type='button'
-                              onClick={() => handleDeleteStaff(item._id)}
+                              onClick={() => handledeleteOrder(item._id)}
                               className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900'
                             >
                               Xoá

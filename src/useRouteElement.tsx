@@ -94,7 +94,7 @@ const useRouteElements = () => {
         {
           path: '/order',
           element: (
-            <AdminLayout title='Danh sách đặt hàng'>
+            <AdminLayout title='Danh sách đơn hàng'>
               <Oders />
             </AdminLayout>
           )

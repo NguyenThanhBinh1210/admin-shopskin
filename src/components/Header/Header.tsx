@@ -31,7 +31,7 @@ const Header = () => {
       ref={modalRef}
       id='drawer-navigation'
       className={`${showMenu ? 'mobile:translate-x-[0] ' : 'mobile:translate-x-[-100%] '
-        } dark:bg-gray-700 mobile:fixed non-scroll dark:border-none border-r border-gray-300 top-0 relative left-0 z-40 h-screen p-4  transition-all  bg-white w-80 mobile:w-[240px]`}
+        } dark:bg-gray-700 mobile:fixed non-scroll dark:border-none border-r border-gray-300 top-0 relative left-0 z-40 h-screen p-4  transition-all  bg-white w-50 mobile:w-[240px]`}
       tabIndex={-1}
       aria-labelledby='drawer-navigation-label'
     >
@@ -71,7 +71,7 @@ const Header = () => {
               to='/comment'
               className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
             >
-              <button>Danh sách bình luận</button>
+              <button>Bình luận</button>
             </Link>
           </li>
           <li>
@@ -79,7 +79,7 @@ const Header = () => {
               to='/product'
               className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
             >
-              <button>Danh sách sản phẩm</button>
+              <button>Sản phẩm</button>
             </Link>
           </li>
           <li>
@@ -87,7 +87,7 @@ const Header = () => {
               to='/category'
               className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
             >
-              <button>Danh sách danh mục</button>
+              <button>Danh mục</button>
             </Link>
           </li>
           <li>
@@ -95,7 +95,7 @@ const Header = () => {
               to='/contact'
               className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
             >
-              <button>Danh sách liên hệ</button>
+              <button>Liên hệ</button>
             </Link>
           </li>
           <li>
@@ -103,7 +103,7 @@ const Header = () => {
               to='/order'
               className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
             >
-              <button>Danh sách đặt hàng</button>
+              <button>Đơn hàng</button>
             </Link>
           </li>
           <li>
@@ -111,7 +111,7 @@ const Header = () => {
               to='/message'
               className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
             >
-              <button>Danh sách tin nhắn</button>
+              <button>Tin nhắn</button>
             </Link>
           </li>
           {profile?.isAdmin && (
@@ -120,7 +120,7 @@ const Header = () => {
                 to='/user'
                 className='flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg pl-4 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'
               >
-                <button>Danh sách nhân viên</button>
+                <button>Nhân viên</button>
               </Link>
             </li>
           )}
@@ -136,7 +136,7 @@ const Header = () => {
                       fill='#A2A2A8'
                     />
                   </svg>
-                  <div>Giao diện tối</div>
+                  <div>Tối</div>
                 </div>
               ) : (
                 <div className='flex gap-x-3 items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'>
@@ -146,7 +146,7 @@ const Header = () => {
                       fill='#A2A2A8'
                     />
                   </svg>
-                  <div>Giao diện sáng</div>
+                  <div>Sáng</div>
                 </div>
               )}
             </button>
