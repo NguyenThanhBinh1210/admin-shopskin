@@ -1,87 +1,88 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import {
-  deleteCategory,
-  deleteStaff,
-  getAllCategory,
-  getAllStaff,
-  searchCategory,
-  searchUser
+  searchPayment,
+  getPayment,
+  deletePayment
 } from '~/apis/product.api'
-import CreateCategory from '~/components/Modal/CreateCategory'
+import CreatePayment from '~/components/Modal/CreatePayment'
+import { AppContext } from '~/contexts/app.context'
 
-const Categories = () => {
-  const [staff, setStaff] = useState<any>([])
-  const [search, setSearch] = useState<string>('')
-  const itemsPerPage = 8
-  const [currentPage, setCurrentPage] = useState(1)
-  const totalPages = Math.ceil(staff?.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-  const currentData = staff?.slice(startIndex, endIndex)
+const Payment = () => {
+  const queryClient = useQueryClient()
+
+  const { profile } = useContext(AppContext)
+  const [data, setData] = useState<any>([])
   const [showComment, setShowComment] = useState<any | null>(null)
   const [isModalOpen, setModalOpen] = useState(false)
   const [isModalOpenCreate, setModalOpenCreate] = useState(false)
-
-  const searchMutation = useMutation({
-    mutationFn: (title: string) => searchCategory(title)
-  })
-  const deleteMutation = useMutation({
-    mutationFn: (body: any) => deleteCategory(body)
-  })
-  const queryClient = useQueryClient()
-  const handleDeleteStaff = (id: string) => {
-    const body = [id]
-    deleteMutation.mutate(body, {
-      onSuccess: () => {
-        toast.success('Đã xoá!')
-        queryClient.invalidateQueries({ queryKey: ['category', 10] })
-      },
-      onError: () => {
-        toast.warn('Lỗi!')
-      }
-    })
-  }
-  const { isLoading: isLoadingUser } = useQuery({
-    queryKey: ['category', 10],
-    queryFn: () => {
-      return getAllCategory({
-        page: 1
-      })
+  const { data: dataConfig, isLoading: isLoadingOption } = useQuery({
+    queryKey: ['payments', 1],
+    queryFn: async () => {
+      const response = await getPayment()
+      return response.data
     },
     onSuccess: (data) => {
-      setStaff(data.data)
+      setData(data.payments)
+      getPayment()
     },
-    cacheTime: 30000
+    cacheTime: 60000
+  })
+  
+  const itemsPerPage = 8
+  const [currentPage, setCurrentPage] = useState(1)
+  const totalPages = Math.ceil(data?.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const currentData = data?.slice(startIndex, endIndex)
+  const searchMutation = useMutation({
+    mutationFn: (title: string) => searchPayment(title)
+  })
+  const deleteMutation = useMutation({
+    mutationFn: (body: any) => deletePayment(body),
+    onError: () => {
+      toast.warn('Error')
+    },
+    onSuccess: () => {
+      toast.success('Đã xoá')
+      queryClient.invalidateQueries('payments')
+    }
   })
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page)
     }
   }
+  const handleDelete = (id: string) => {
+    const body = [id]
+    deleteMutation.mutate(body)
+  }
+  const [search, setSearch] = useState<string>('')
+
   const handleSearch = (e: any) => {
     e.preventDefault()
     searchMutation.mutate(search, {
       onSuccess: (data) => {
-        setStaff(data.data)
+        setData(data.data)
         setCurrentPage(1)
       },
-      onError: () => {
-        toast.warn('Lỗi!')
+      onError: (error: unknown) => {
+        console.log(error)
       }
     })
   }
+  console.log(currentData)
   return (
     <>
       <div className='flex justify-between mb-3 mobile:flex-col tablet:flex-col'>
         <div className='mb-2 flex items-center'>
-          <span className='my-4 font-bold dark:text-white'>Số lượng danh mục: {staff.length || 0}</span>
+          <span className='my-4 font-bold dark:text-white'>Số lượng liên hệ: {dataConfig?.payments.length || 0}</span>
           <button
             onClick={() => setModalOpenCreate(true)}
             className='disabled:bg-opacity-70 ml-4 h-[40px] w-max text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-2xl text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
           >
-            Tạo danh mục
+            Tạo tài khoản ngân hàng thanh toán
           </button>
         </div>
         <div className='w-[50%] mobile:w-full'>
@@ -126,7 +127,7 @@ const Categories = () => {
         </div>
       </div>
       <div className='flex flex-col gap-[30px] flex-1'>
-        {isLoadingUser ? (
+        {isLoadingOption ? (
           <div className='w-full flex justify-center items-center h-full gap-x-3'>
             <svg
               aria-hidden='true'
@@ -156,25 +157,19 @@ const Categories = () => {
                       STT
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Tên
-                    </th>
-                    {/* <th scope='col' className='px-6 py-3'>
-                      Email
+                      Tên ngân hàng
                     </th>
                     <th scope='col' className='px-6 py-3'>
-                      Name
+                      Số tài khoản
                     </th>
-                    <th scope='col' className='px-6 py-3'>
-                      User Name
-                    </th> */}
                     <th scope='col' className='px-6 py-3'>
                       Hành động
                     </th>
                   </tr>
                 </thead>
-                {staff.length !== 0 && (
+                {currentData?.length !== 0 && (
                   <tbody>
-                    {currentData.map((item: any, idx: number) => {
+                    {currentData?.map((item: any, idx: number) => {
                       return (
                         <tr
                           key={item._id}
@@ -190,7 +185,13 @@ const Categories = () => {
                             scope='row'
                             className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
-                            {item.nameCategory}
+                            {item?.bankName}
+                          </th>
+                          <th
+                            scope='row'
+                            className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                          >
+                            {item?.accountNumber}
                           </th>
                           <th
                             scope='row'
@@ -199,7 +200,7 @@ const Categories = () => {
                             <button
                               type='button'
                               onClick={() => {
-                                setShowComment(item)
+                                setShowComment(item) 
                                 setModalOpen(true)
                               }}
                               className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
@@ -208,7 +209,7 @@ const Categories = () => {
                             </button>
                             <button
                               type='button'
-                              onClick={() => handleDeleteStaff(item._id)}
+                              onClick={() => handleDelete(item._id)}
                               className='text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900'
                             >
                               Xoá
@@ -284,17 +285,17 @@ const Categories = () => {
           </>
         )}
       </div>
-      <CreateCategory
-        data={showComment}
-        isOpen={isModalOpenCreate || isModalOpen}
+      <CreatePayment 
+        data={showComment} 
+        isOpen={isModalOpenCreate || isModalOpen} 
         onClose={() => {
-          setModalOpenCreate(false)
-          setModalOpen(false)
-          setShowComment(null)
+        setModalOpenCreate(false)
+        setModalOpen(false)
+        setShowComment(null)
         }}
       />
     </>
   )
 }
 
-export default Categories
+export default Payment

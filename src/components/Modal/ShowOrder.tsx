@@ -187,7 +187,7 @@ const ShowOrder = ({ isOpen, onClose, data }: any) => {
                 </div>
                 <div>
                   <label htmlFor='description' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                    Mô tả
+                    Địa chỉ cụ thể
                   </label>
                   <textarea
                     disabled

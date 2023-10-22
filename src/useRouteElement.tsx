@@ -12,6 +12,7 @@ import Products from './pages/Product'
 import Categories from './pages/Category'
 import Oders from './pages/Order'
 import Messages from './pages/Message'
+import Payment from './pages/Payment'
 
 function ProtecedRoute() {
   const { isAuthenticated } = React.useContext(AppContext)
@@ -102,8 +103,16 @@ const useRouteElements = () => {
         {
           path: '/message',
           element: (
-            <AdminLayout title='Danh sách tin nhắn'>
+            <AdminLayout title='Danh sách email đăng ký nhận tin nhắn'>
               <Messages />
+            </AdminLayout>
+          )
+        },
+        {
+          path: '/payment',
+          element: (
+            <AdminLayout title='Ngân hàng dùng để thanh toán'>
+              <Payment />
             </AdminLayout>
           )
         }

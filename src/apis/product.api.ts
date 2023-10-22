@@ -51,7 +51,14 @@ export const getAllStaff = () => http.get('v1/user/get-all-staff')
 export const getAllOrder = () => http.get('v1/order/get-order')
 export const searchOrder = (name: string) => http.get(`/v1/order/search?name=${name}`)
 export const deleteOrder = (id: string) => http.delete(`v1/order/delete/${id}`)
+export const updateOrder = (id: string, body: any) => upload.patch(`v1/order/update/${id}`, body)
+// export const updateOrder = (id: string) => http.patch(`v1/order/update/${id}`)
 export const searchCategory = (name: string) => http.get(`/v1/category/search?nameCategory=${name}`)
+export const getPayment = () => http.get('v1/payment/get-payment')
+export const searchPayment = (name: string) => http.get(`/v1/payment/search?bankName=${name}`)
+export const deletePayment = (id: string) => http.delete(`v1/payment/delete/${id}`)
+export const updatePayment = (id: string, body: any) => http.patch(`v1/payment/update/${id}`, body)
+export const createPayment = (body: any) => http.post('v1/payment/create', body)
 export const deleteProduct = (body: string[]) =>
   http.delete(`/v1/product/delete`, {
     data: {

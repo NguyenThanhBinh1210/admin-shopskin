@@ -280,7 +280,7 @@ const CreateProduct = ({ isOpen, onClose, data }: any) => {
               <div className='grid grid-cols-2 gap-x-4'>
                 <div>
                   <label htmlFor='use' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                    Use
+                    Thành phần chính
                   </label>
                   <textarea
                     required
@@ -294,7 +294,7 @@ const CreateProduct = ({ isOpen, onClose, data }: any) => {
                 </div>
                 <div>
                   <label htmlFor='wording' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                    Wording
+                    Cách dùng
                   </label>
                   <textarea
                     required
@@ -309,7 +309,7 @@ const CreateProduct = ({ isOpen, onClose, data }: any) => {
               </div>
               <div>
                 <label htmlFor='note' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                  Ghi chú
+                  Lưu ý
                 </label>
                 <textarea
                   required

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { deleteOrder, getAllOrder, searchOrder } from '~/apis/product.api'
+import { deleteOrder, getAllOrder, searchOrder, updateOrder } from '~/apis/product.api'
 import Modal from '~/components/Modal'
 import CreateStaff from '~/components/Modal/CreateStaff'
 import ShowOrder from '~/components/Modal/ShowOrder'
@@ -27,6 +27,12 @@ const Oders = () => {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteOrder(id)
   })
+  // console.log('id',currentData)
+  const updateMutation = useMutation((params: { id: string; complete: string }) => {
+    return updateOrder(params.id, { complete: params.complete })
+  })
+
+  console.log('id', updateMutation)
   const queryClient = useQueryClient()
   const handledeleteOrder = (id: string) => {
     deleteMutation.mutate(id, {
@@ -38,6 +44,32 @@ const Oders = () => {
         toast.warn('Lỗi!')
       }
     })
+  }
+  // const handleStatusOrder = (id: string) => {
+  //   updateMutation.mutate(id, {
+  //     onSuccess: () => {
+  //       toast.success('Đã xoá!')
+  //       queryClient.invalidateQueries({ queryKey: ['orders', 3] })
+  //     },
+  //     onError: () => {
+  //       toast.warn('Lỗi!')
+  //     }
+  //   })
+  // }
+
+  const handleStatusChange = (newStatus: any, id: string) => {
+    updateMutation.mutate(
+      { id: id, complete: newStatus },
+      {
+        onSuccess: () => {
+          toast.success('Đã cập nhật trạng thái đơn hàng.')
+          queryClient.invalidateQueries({ queryKey: ['orders', 3] })
+        },
+        onError: () => {
+          toast.warn('Lỗi server!')
+        }
+      }
+    )
   }
   const { isLoading: isLoadingUser } = useQuery({
     queryKey: ['orders', 3],
@@ -147,25 +179,43 @@ const Oders = () => {
               <table className='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
                 <thead className='text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
                   <tr>
-                    <th scope='col' className='px-6 py-3'>
+                    <th scope='col' className='px-4 py-3'>
                       STT
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    <th scope='col' className='px-4 py-3'>
                       Name
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    <th scope='col' className='px-4 py-3'>
                       Email
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    <th scope='col' className='px-4 py-3'>
                       phone
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    <th scope='col' className='px-4 py-3'>
+                      Số lượng
+                    </th>
+                    <th scope='col' className='px-4 py-3'>
+                      Số đơn
+                    </th>
+                    <th scope='col' className='px-4 py-3'>
                       Tổng tiền
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    <th scope='col' className='px-4 py-3'>
+                      Thanh toán
+                    </th>
+                    <th scope='col' className='px-4 py-3'>
+                      Mã thanh toán
+                    </th>
+                    <th scope='col' className='px-4 py-3'>
                       Ghi chú
                     </th>
-                    <th scope='col' className='px-6 py-3'>
+                    <th scope='col' className='px-4 py-3'>
+                      Trạng thái
+                    </th>
+                    <th scope='col' className='px-4 py-3'>
+                      Thao tác
+                    </th>
+                    <th scope='col' className='px-4 py-3'>
                       Hành động
                     </th>
                   </tr>
@@ -180,43 +230,91 @@ const Oders = () => {
                         >
                           <th
                             scope='row'
-                            className='w-[100px] px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                            className='w-[100px] px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             {'#' + (idx + 1)}
                           </th>
                           <th
                             scope='row'
-                            className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                            className='px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             {item.name}
                           </th>
                           <th
                             scope='row'
-                            className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                            className='px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             {item.email}
                           </th>
                           <th
                             scope='row'
-                            className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                            className='px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             {item.phone}
                           </th>
                           <th
                             scope='row'
-                            className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                            className='px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                          >
+                            {item.quantity}
+                          </th>
+                          <th
+                            scope='row'
+                            className='px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                          >
+                            {item.soDon}
+                          </th>
+                          <th
+                            scope='row'
+                            className='px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             {FormatNumber(item.Sum)}đ
                           </th>
                           <th
                             scope='row'
-                            className='px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                            className='px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                          >
+                            {item.isPayment?(<p className='text-green-500'>Online</p>):(<p className='text-yellow-500'>Tiền mặt</p>)}
+                          </th>
+                          <th
+                            scope='row'
+                            className='px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                          >
+                            {item.code}
+                          </th>
+                          <th
+                            scope='row'
+                            className='px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             {item.note}
                           </th>
                           <th
                             scope='row'
-                            className='px-6 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                            className='px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                          >
+                            {item.complete === 'pending' ? (<p className='text-yellow-500'>Đang giao</p>) 
+                            : item.complete === 'completed' ? (<p className='text-green-500'>Giao thành công</p>) 
+                            : (<p className='text-red-500'>Huỷ đơn</p>)}
+                            </th>
+                          <th
+                            scope='row'
+                            className='px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                          >
+                            <select
+                              title='Giao hàng giao hàng thành công'
+                              // value={currentData.complete}
+                              value={item.complete}
+                              onChange={(e) => handleStatusChange(e.target.value, item._id)}
+                              className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover-bg-blue-700 dark:focus:ring-blue-900'
+                            >
+                              <option value='pending'>Đang giao</option>
+                              <option value='completed'>Giao thành công</option>
+                              <option value='none'>Huỷ đơn</option>
+                            </select>
+                          </th>
+                          <th
+                            scope='row'
+                            className='px-4 py-3 w-[200px] flex items-center gap-x-2 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                           >
                             <button
                               type='button'
@@ -226,7 +324,7 @@ const Oders = () => {
                               }}
                               className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900'
                             >
-                              Xem
+                              Chi tiết
                             </button>
                             <button
                               type='button'
